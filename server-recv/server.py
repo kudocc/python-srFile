@@ -31,24 +31,19 @@ if os.path.isfile(dirPath):
 system = platform.system()
 
 s = None
-for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC,
-                              socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
-    af, socktype, proto, canonname, sa = res
-    try:
-        s = socket.socket(af, socktype, proto)
-    except socket.error as msg:
-        s = None
-        print msg
-        continue
-    try:
-        s.bind(sa)
-        s.listen(1)
-    except socket.error as msg:
-        print msg
-        s.close()
-        s = None
-        continue
-    break
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as msg:
+    s = None
+    print msg
+    sys.exit(1)
+try:
+    s.bind(('', PORT))
+    s.listen(1)
+except socket.error as msg:
+    print msg
+    s.close()
+    s = None
 if s is None:
     print 'could not open socket'
     sys.exit(1)

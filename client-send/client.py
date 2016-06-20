@@ -72,23 +72,23 @@ index = string.find(address, ':');
 if index == -1:
     exitWithString('can not find : in address string')
 ip = address[:index]
-port = address[index+1:]
-
+#ip = '192.168.0.102'
+port = int(address[index+1:])
+#port = 7777
+print 'ip:', ip, ' port:', port
 s = None
-for res in socket.getaddrinfo(ip, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
-    af, socktype, proto, canonname, sa = res
-    try:
-        s = socket.socket(af, socktype, proto)
-    except socket.error as msg:
-        s = None
-        continue
-    try:
-        s.connect(sa)
-    except socket.error as msg:
-        s.close()
-        s = None
-        continue
-    break
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as msg:
+    s = None
+try:
+    print 'before'
+    s.connect((ip, port))
+    print 'after'
+except socket.error as msg:
+    print 'here'
+    s.close()
+    s = None
 if s is None:
     print 'could not open socket'
     sys.exit(1)
