@@ -91,7 +91,7 @@ while 1:
                 raise
     print 'relative path:', relativePath, ' file path:', filePath, ' dataLen:', dataLen
     dataBuffer = dataBuffer[8+pathLen:]
-    file = open(filePath, 'w')
+    file = open(filePath, 'wb')
     #read dataLen
     file.write(dataBuffer)
     writeLen = len(dataBuffer)
