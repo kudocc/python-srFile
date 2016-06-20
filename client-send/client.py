@@ -56,13 +56,16 @@ def relativePathWithFilePath(filePath, fileDirPath, peerSystem, pathSeparator):
     print 'relative:', relative, ' file dir:', fileDirPath, ' filePath:', filePath
     peerPathSeparator = '\\' if peerSystem == 'Windows' else '/'
     if peerPathSeparator != pathSeparator:
-        relative = string.join(string.split(relative, pathSeparator))
+        relative = string.join(string.split(relative, pathSeparator), peerPathSeparator)
     return relative
 
 if len(sys.argv) != 3:
     exitWithString('python client.py /Users/kudocc/Desktop/xxx 127.0.0.1:7777')
 filePath = sys.argv[1]
 filePath = os.path.realpath(filePath)
+system = platform.system()
+pathSeparator = '\\' if system == 'Windows' else '/'
+print 'path separator:', pathSeparator
 #check filePath
 if not os.path.exists(filePath):
     exitWithString('file or directory does not exit')
@@ -95,7 +98,6 @@ if s is None:
 
 #get peer system
 dataBuf = ''
-system = platform.system()
 peerSystem = ''
 while 1:
     data = s.recv(1024)
@@ -111,8 +113,6 @@ while 1:
     peerSystem = dataBuf[4:]
     break
 print 'peer system:', peerSystem
-
-pathSeparator = '\\' if system == 'Windows' else '/'
 
 if os.path.isfile(filePath):
     dir = os.path.dirname(filePath)
