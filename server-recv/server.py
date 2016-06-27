@@ -14,13 +14,14 @@ def exitWithString(errorString):
 HOST = None               # Symbolic name meaning all available interfaces
 PORT = 7777               # Arbitrary non-privileged port
 
-if len(sys.argv) != 2:
-    exitWithString('Please input a directory path to keep files')
+dirPath = ''
+if len(sys.argv) == 0 || len(sys.argv) == 1:
+    dirPath = raw_input('Please input a directory path to keep files:')
+else:
+    dirPath = sys.argv[1]
 
-dirPath = sys.argv[1]
 if len(dirPath) == 0:
     exitWithString('directory name length is zero')
-
 dirPath = os.path.realpath(dirPath)
 #check file name
 if not os.path.exists(dirPath):

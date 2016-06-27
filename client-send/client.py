@@ -6,6 +6,7 @@ import string
 import platform
 import socket
 import struct
+import time
 
 def exitWithString(errorString):
     print errorString
@@ -50,13 +51,20 @@ def sendFile(sock, filePath, relativePath):
         data = file.read(1024)
     file.close()
 
+def replaceInvalidWindowsPathCharacter(pathComponent, placeholder):
+    list = ['<', '>', '/', '\\', '|', ':', '"', ',', '*', '?']
+    for c in list:
+        pathComponent = pathComponent.replace(c, placeholder)
+    return pathComponent
 
 def relativePathWithFilePath(filePath, fileDirPath, peerSystem, pathSeparator):
     relative = filePath[len(fileDirPath)+1:]
-    print 'relative:', relative, ' file dir:', fileDirPath, ' filePath:', filePath
     peerPathSeparator = '\\' if peerSystem == 'Windows' else '/'
     if peerPathSeparator != pathSeparator:
-        relative = string.join(string.split(relative, pathSeparator), peerPathSeparator)
+        listPathComponent = string.split(relative, pathSeparator)
+        if peerSystem == 'Windows':
+            listPathComponent = [replaceInvalidWindowsPathCharacter(pathComponent, '-') for pathComponent in listPathComponent]
+        relative = string.join(listPathComponent, peerPathSeparator)
     return relative
 
 if len(sys.argv) != 3:
@@ -129,7 +137,13 @@ for root, dirs, files in list_dirs:
 
 for path in listFile:
     relative = relativePathWithFilePath(path, dir, peerSystem, pathSeparator)
+    start = time.time()
     sendFile(s, path, relative)
+    end = time.time()
+    durationInSecond = end - start
+    fileSizeOfM = os.path.getsize(path) / (1024*1024)
+    if duration > 0.1:
+        print 'file:', path, 'transmission speed:', fileSizeOfM/durationInSecond, 'MB/S'
     print 'sended file:', path, ' relative:', relative
 
 s.close()
